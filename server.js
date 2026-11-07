@@ -117,6 +117,10 @@ const server = http.createServer(async (req, res) => {
     const m = req.method;
 
     if (m === 'GET' && p === '/api/live') return send(res, 200, view(state.read((d) => d) || {}));
+    if (m === 'GET' && p === '/api/health') {
+      const s = state.read((d) => d) || {};
+      return send(res, 200, { ok: true, startedAt: s.startedAt || null, rounds: Object.keys(s.rounds || {}).length, samples: (s.samples || []).length, lastSampleAt: (s.samples || []).slice(-1)[0]?.receivedAt || null });
+    }
     if (m === 'GET' && p === '/api/scores') return send(res, 200, scoresView());
     if (m === 'GET' && p === '/api/chain') return send(res, 200, state.read((d) => d)?.frontier || { ok: false, error: 'no chain check yet' });
     if (m === 'GET' && p === '/api/buckets') return send(res, 200, { buckets: BUCKETS });
