@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="squeekchain-project" content="wheel-prophet-overlay">
+<title>Wheel Prophet — stream overlay</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+  html, body { background: transparent; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+  .ov { text-align: center; padding: 24px 32px; border: 1px solid var(--line); background: rgba(11,12,11,.82); border-radius: 4px; }
+  .ov .r { color: var(--dim); letter-spacing: .2em; font-size: 13px; }
+  .ov .c { font-size: 44px; font-weight: 700; color: var(--accent); margin: 6px 0; }
+  .ov .s { color: var(--ink); }
+  .ov .t { color: var(--dim); font-size: 13px; margin-top: 8px; }
+  .ov .hit { color: var(--accent); } .ov .miss { color: var(--err); }
+</style>
+</head>
+<body>
+<div class="ov">
+  <div class="r">ROUND <span id="rid">–</span> · <span id="cd">–</span></div>
+  <div class="c" id="call">reading the wheel…</div>
+  <div class="s" id="sub">–</div>
+  <div class="t" id="last">–</div>
+</div>
+<script>
+async function tick() {
+  try {
+    const d = await (await fetch('/api/live')).json();
+    if (d.round) {
+      document.getElementById('rid').textContent = d.round.id;
+      document.getElementById('cd').textContent = d.round.secondsLeft + 's left';
+      const c = d.round.call;
+      document.getElementById('call').textContent = c ? `CALL: ${c.bucket.toUpperCase()}` : 'no call sealed';
+      document.getElementById('sub').textContent = c ? `p(active) ${c.pActive} · ~${c.expectedWork} work · ${c.hash.slice(0, 10)}…` : '';
+    }
+    const l = d.lastGraded;
+    document.getElementById('last').innerHTML = l
+      ? `last round <b class="${l.hit ? 'hit' : 'miss'}">${l.hit ? 'HIT' : 'MISS'}</b> — called ${l.called}, saw ${l.saw} (${l.actualWork} work)`
+      : 'no graded round yet';
+  } catch (e) { /* keep the overlay quiet */ }
+}
+tick(); setInterval(tick, 5000);
+</script>
+</body>
+</html>

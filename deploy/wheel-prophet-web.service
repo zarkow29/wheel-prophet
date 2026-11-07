@@ -1,0 +1,20 @@
+[Unit]
+Description=Wheel Prophet board (HTTP API + site)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/wheel-prophet
+EnvironmentFile=-/home/ubuntu/wheel-prophet/.env
+Environment=PORT=8099
+Environment=HOST=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

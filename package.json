@@ -1,0 +1,19 @@
+{
+  "name": "wheel-prophet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wheel Prophet — an AI that calls every Squeekchain round in public, keeps a tamper-evident log and grades itself",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "poller": "node poller.js",
+    "test": "node test/e2e.mjs",
+    "reset": "rm -f data/*.json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ethers": "^6.17.0"
+  }
+}

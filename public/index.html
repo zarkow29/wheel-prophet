@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="squeekchain-project" content="wheel-prophet">
+<meta name="description" content="Wheel Prophet — an AI that calls every Squeekchain round in public, seals each call before the round closes and grades itself. squeekchain-project">
+<title>Wheel Prophet — the AI that calls every Squeek round</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body data-project="squeekchain-project">
+<header>
+  <div class="brand">WHEEL<span>//</span>PROPHET</div>
+  <div class="top">
+    <span class="pill" id="chainPill">chain …</span>
+    <span class="pill" id="walletPill">not signed in</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>SOMEONE HAS TO CALL IT.</h1>
+    <p class="sub">
+      Every 600-second Squeekchain round, this bot calls what the hamster will do — before the round
+      closes — publishes the call with a hash it cannot edit afterwards, then grades itself in public
+      against what the wheel actually did. You can call the round too, from your own wallet.
+    </p>
+    <p class="fine">Reads <code>api.squeekchain.com</code> for live telemetry and Sepolia's <code>SqueekCore</code> for the certified frontier. Signature-only: no gas, no transaction, no custody.</p>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>ROUND <span id="roundId">…</span> · CLOSES IN <b id="countdown">–</b></h2>
+      <div class="call" id="callBox"><em>waiting for the poller…</em></div>
+      <div class="kv"><span>HASH PUBLISHED AT SEAL TIME</span><code id="sealHash">–</code></div>
+      <div class="kv"><span>RECOMPUTES NOW</span><b id="recomputes">–</b></div>
+      <details>
+        <summary>why this call</summary>
+        <ul id="whyList"></ul>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2>LAST GRADED ROUND</h2>
+      <div id="lastBox"><em>nothing graded yet</em></div>
+      <div class="kv"><span>STREAK</span><b id="streak">–</b></div>
+      <div class="kv"><span>AI ACCURACY</span><b id="acc">–</b></div>
+      <div class="kv"><span>CLIMATOLOGY BASELINE</span><b id="baseline">–</b></div>
+    </div>
+
+    <div class="card">
+      <h2>LIVE WHEEL</h2>
+      <div class="kv"><span>STATE</span><b id="wheelState">–</b></div>
+      <div class="kv"><span>RPM (milli)</span><b id="wheelRpm">–</b></div>
+      <div class="kv"><span>SPEED (mm/s)</span><b id="wheelSpeed">–</b></div>
+      <div class="kv"><span>SAMPLE</span><b id="wheelAt">–</b></div>
+      <div class="kv"><span>CERTIFIED FRONTIER</span><b id="frontier">–</b></div>
+      <div class="kv"><span>IDENTITIES</span><b id="identities">–</b></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>CALL THE ROUND YOURSELF</h2>
+    <div class="row">
+      <button class="btn" id="connect">CONNECT WALLET</button>
+      <span class="fine" id="playState">sign in, then pick a band for round <b id="playRound">–</b></span>
+    </div>
+    <div class="row" id="bucketRow"></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>WHERE IT IS RIGHT AND WRONG</h2>
+      <table id="bucketTable"><thead><tr><th>CALLED</th><th>TIMES</th><th>CORRECT</th></tr></thead><tbody></tbody></table>
+      <h3>CALIBRATION</h3>
+      <table id="calibTable"><thead><tr><th>pActive</th><th>N</th><th>ACTIVE</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2>HUMANS VS THE BOT</h2>
+      <table id="lb"><thead><tr><th>#</th><th>WALLET</th><th>CALLS</th><th>HITS</th><th>PENDING</th></tr></thead><tbody></tbody></table>
+      <p class="fine">Your call is graded by the same rulebook as the bot's. Late calls are refused by the server, not by trust.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>THE LOG (RECOMPUTE ANY ROW)</h2>
+    <table id="log"><thead><tr><th>ROUND</th><th>CALLED</th><th>SAW</th><th>WORK</th><th>OUTCOME</th><th>HASH</th></tr></thead><tbody></tbody></table>
+    <p class="fine">Every row ships the call, its nonce and its hash, so the seal can be checked field by field. The honest limit: the log lives on our server. A stronger version would anchor each hash on-chain, and we say so here instead of pretending otherwise.</p>
+  </section>
+
+  <section class="card">
+    <h2>HOW IT WORKS</h2>
+    <ol class="how">
+      <li><b>Sample</b> — <code>/v1/status</code> every 15 s: wheel state, rpm, speed, cumulative work.</li>
+      <li><b>Call</b> — in the first 2 minutes of a round, the model picks a band from half-hour climatology (7-day <code>/v1/measurement/stats</code>), the live wheel state and the last rounds' work.</li>
+      <li><b>Seal</b> — <code>sha256(round, pActive, expectedWork, bucket, nonce)</code> is stored and returned by the API while the round is still open.</li>
+      <li><b>Grade</b> — when the round ends, work added during it (from our own sampling) decides the band, and the call is scored — alongside a climatology-only baseline, so you can see whether the live signal actually helps.</li>
+    </ol>
+  </section>
+</main>
+<footer>Wheel Prophet · a Squeekchain build (<span class="marker">squeekchain-project</span>) · reads only, signs nothing for you</footer>
+<script src="/app.js"></script>
+</body>
+</html>
