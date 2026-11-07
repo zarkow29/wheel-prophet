@@ -9,6 +9,7 @@ then scores every call against what the wheel actually did — next to a climato
 whether the live signal is worth anything.
 
 Built for the Squeekchain Genesis **Code** lane. Project marker: `squeekchain-project`.
+**Live board: https://wheelprophet.duckdns.org** (this repo is the same code that runs there).
 
 ## What it does
 
